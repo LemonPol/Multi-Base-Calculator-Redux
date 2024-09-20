@@ -1,3 +1,7 @@
+export interface EquationBoxProps {
+    evaluate: () => void,
+}
+
 export interface result {
     dec: string,
     hex: string,

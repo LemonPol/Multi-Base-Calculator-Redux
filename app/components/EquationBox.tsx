@@ -1,13 +1,28 @@
 "use client"
 
-import { useState } from "react";
-import { result, error } from "../types/common";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { result, error, EquationBoxProps } from "../types/common";
 import { useVariableMap } from "./EquationContainer";
 
-function EquationBox() {
+const EquationBox = forwardRef(({ evaluate }: EquationBoxProps, ref) => {
 
     const { variableMap, setVariableMap } = useVariableMap();
     const [display, setDisplay] = useState<string>("");
+
+    const value = useRef("");
+
+
+    useImperativeHandle(ref, () => ({
+        evaluate() {
+            const result = evaluateEquation(value.current);
+            console.log(result);
+            if (result.status) {
+                setDisplay((result.data as result).dec as string);
+            } else {
+                setDisplay(error[(result.data as error)]);
+            }
+        }
+    }));
 
     function evaluateEquation(input: string) : {status: boolean, data: result} | {status: boolean, data: error} {
 
@@ -230,7 +245,6 @@ function EquationBox() {
                 if (typeof t2 == "string") {
                     variableMap.set(t2, t1);
                     setVariableMap(new Map(variableMap));
-                    console.log("help: " + variableMap);
                     return t1;
                 }
             }
@@ -273,15 +287,8 @@ function EquationBox() {
         >
             <input
                 onChange={(e) => {
-                    const result = evaluateEquation(e.target.value);
-
-                    // Healthy amount of type gymnastics here
-
-                    if (result.status) {
-                        setDisplay((result.data as result).dec as string);
-                    } else {
-                        setDisplay(error[(result.data as error)])
-                    }
+                    value.current = e.target.value;
+                    evaluate();
                 }}
             />
             <p>
@@ -289,6 +296,6 @@ function EquationBox() {
             </p>
         </div>
     )
-}
+});
 
 export default EquationBox;
