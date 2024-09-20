@@ -7,37 +7,101 @@ import React from "react";
 const VariableContext = createContext<any>(null);
 
 function EquationContainer() {
-
     const [variableMap, setVariableMap] = useState(new Map<string, number | string>());
-    
-    const [equationBoxes, setEquationBoxes] = useState<number[]>([]);
-    const refs = useRef(new Map<number, React.RefObject<any>>());
+    const [equationBoxes, setEquationBoxes] = useState<string[]>(["box-0"]);
 
-    const addEquationBox = () => {
-        setEquationBoxes((prevBoxes) => [...prevBoxes, prevBoxes.length]); // Add a new EquationBox with a unique key
+    const [activeBox, setActiveBox] = useState<string>("box-0");
+
+    const refs = useRef(new Map<string, React.RefObject<any>>());
+
+    const generateUniqueId = () => {
+        return `equationBox-${Math.random().toString(36)}`;
     };
 
-    const removeEquationBox = (index: number) => {
-        setEquationBoxes((prev) => prev.filter((_, i) => i !== index)); // Remove by index
-        refs.current.delete(index); // Remove the ref when the EquationBox is removed
+    const addEquationBox = (id: string) => {
+        const newId = generateUniqueId();
+        setEquationBoxes((prevBoxes) => {
+            const newIndex = prevBoxes.indexOf(id) + 1;
+            return [
+                ...prevBoxes.slice(0, newIndex),
+                newId,
+                ...prevBoxes.slice(newIndex),
+            ];
+        });
+
+        setTimeout(() => {
+            setActiveBox(newId);
+        })
     };
+
+    const removeEquationBox = (id: string) => {
+        setEquationBoxes((prev) => prev.filter((boxId) => boxId !== id));
+        refs.current.delete(id);
+    };
+
+    const processInput = (e: React.KeyboardEvent, id: string) => {
+        
+        const activeIndex = equationBoxes.indexOf(id);
+        const activeRef = refs.current.get(id);
+
+        if (e.key === 'Enter') {
+            addEquationBox(id);
+        } else if (e.key == 'ArrowUp') {
+            if (activeIndex > 0) {
+                const previousId = equationBoxes[activeIndex - 1];
+                const previousBoxRef = refs.current.get(previousId);
+                if (previousBoxRef && previousBoxRef.current) {
+                    previousBoxRef.current.focus();
+                }
+            }
+        } else if (e.key == 'ArrowDown') {
+            if (activeIndex < equationBoxes.length - 1) {
+                const nextId = equationBoxes[activeIndex + 1];
+                const nextBoxRef = refs.current.get(nextId);
+                if (nextBoxRef && nextBoxRef.current) {
+                    nextBoxRef.current.focus();
+                }
+            }
+        } else if (e.key == 'Backspace') {
+            if (equationBoxes.length != 1 && activeRef?.current.input() == "") {
+                removeEquationBox(id);
+                if (equationBoxes.length > 1) {
+                    if (activeIndex < equationBoxes.length - 1) {
+                        const nextId = equationBoxes[activeIndex + 1];
+                        const nextBoxRef = refs.current.get(nextId);
+                        if (nextBoxRef && nextBoxRef.current) {
+                            nextBoxRef.current.focus();
+                        }
+                    } else if (activeIndex > 0) {
+                        const previousId = equationBoxes[activeIndex - 1];
+                        const previousBoxRef = refs.current.get(previousId);
+                        if (previousBoxRef && previousBoxRef.current) {
+                            previousBoxRef.current.focus();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     useEffect(() => {
-        equationBoxes.forEach((_, index) => {
-            if (!refs.current.has(index)) {
-                refs.current.set(index, React.createRef());
+        equationBoxes.forEach((id) => {
+            if (!refs.current.has(id)) {
+                refs.current.set(id, React.createRef());
             }
         });
     }, [equationBoxes]);
 
-    const evaluateAll = () => {
+    useEffect(() => {
+        refs.current.get(activeBox)?.current.focus();
+    }, [activeBox])
 
-        // Reset variablemap to prevent stale variables
+    const evaluateAll = () => {
         setVariableMap(new Map());
 
         setTimeout(() => {
-            equationBoxes.forEach((_, index) => {
-                const equationBoxRef = refs.current.get(index);
+            equationBoxes.forEach((id) => {
+                const equationBoxRef = refs.current.get(id);
                 if (equationBoxRef && equationBoxRef.current) {
                     equationBoxRef.current.evaluate();
                 }
@@ -46,30 +110,27 @@ function EquationContainer() {
     };
 
     const updateMap = (key: string, value: number) => {
-      const newMap = new Map(variableMap);
-      newMap.set(key, value);
-      setVariableMap(newMap);
+        const newMap = new Map(variableMap);
+        newMap.set(key, value);
+        setVariableMap(newMap);
     };
-  
+
     return (
         <div>
-            <button
-                onClick={() => {
-                    addEquationBox();
-                }}
-            >
-                Add equation box
-            </button>
             <VariableContext.Provider value={{ variableMap, setVariableMap }}>
-                {equationBoxes.map((index) => {
-                    if (!refs.current.has(index)) {
-                        refs.current.set(index, React.createRef());
+                {equationBoxes.map((id) => {
+                    if (!refs.current.has(id)) {
+                        refs.current.set(id, React.createRef());
                     }
                     return (
-                        <EquationBox 
-                            key={index} 
-                            ref={refs.current.get(index)}
+                        <EquationBox
+                            key={id}
+                            id={id}
+                            ref={refs.current.get(id)}
                             evaluate={evaluateAll}
+                            activeid={activeBox}
+                            setactive={setActiveBox}
+                            processinput={processInput}
                         />
                     );
                 })}

@@ -1,5 +1,9 @@
 export interface EquationBoxProps {
     evaluate: () => void,
+    setactive: (index: string) => void,
+    processinput: (e: React.KeyboardEvent, id: string) => void,
+    id: string,
+    activeid: string
 }
 
 export interface result {
@@ -13,4 +17,5 @@ export enum error {
     MALFORMED_PARENTHESES,
     MALFORMED_EXPRESSION,
     INCOMPLETE_EXPRESSION,
+    INVALID_CHARACTER,
 }

@@ -4,22 +4,33 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { result, error, EquationBoxProps } from "../types/common";
 import { useVariableMap } from "./EquationContainer";
 
-const EquationBox = forwardRef(({ evaluate }: EquationBoxProps, ref) => {
+const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinput}: EquationBoxProps, ref) => {
 
     const { variableMap, setVariableMap } = useVariableMap();
     const [display, setDisplay] = useState<string>("");
+
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const value = useRef("");
 
 
     useImperativeHandle(ref, () => ({
+        focus() {
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        },
         evaluate() {
             const result = evaluateEquation(value.current);
-            console.log(result);
             if (result.status) {
                 setDisplay((result.data as result).dec as string);
             } else {
                 setDisplay(error[(result.data as error)]);
+            }
+        },
+        input() {
+            if (inputRef.current) {
+                return inputRef.current.value;
             }
         }
     }));
@@ -177,7 +188,25 @@ const EquationBox = forwardRef(({ evaluate }: EquationBoxProps, ref) => {
                 }
                 operatorStack.push(input.charAt(index));
             }
-    
+
+            if (input.charAt(index) && !(
+                (input.charCodeAt(index) >= 48 && input.charCodeAt(index) <= 57) ||  // 0-9
+                (input.charCodeAt(index) >= 65 && input.charCodeAt(index) <= 90) ||  // A-Z
+                (input.charCodeAt(index) >= 97 && input.charCodeAt(index) <= 122) || // a-z
+                input.charAt(index) == " " ||
+                input.charAt(index) == "(" ||
+                input.charAt(index) == ")" ||
+                input.charAt(index) == "+" ||
+                input.charAt(index) == "-" ||
+                input.charAt(index) == "*" ||
+                input.charAt(index) == "/" ||
+                input.charAt(index) == "^" ||
+                input.charAt(index) == "="
+            )) {
+                // ERROR: Unexpected character!
+                return {status: false, data: error.INVALID_CHARACTER};
+            }
+
         }
     
         while (operatorStack.length > 0) {
@@ -278,7 +307,6 @@ const EquationBox = forwardRef(({ evaluate }: EquationBoxProps, ref) => {
     
     }
     
-
     return (
         <div
             style={{
@@ -286,13 +314,27 @@ const EquationBox = forwardRef(({ evaluate }: EquationBoxProps, ref) => {
             }}
         >
             <input
+                ref={inputRef}
                 onChange={(e) => {
                     value.current = e.target.value;
                     evaluate();
                 }}
+                onSelect={(e) => {
+                    setactive(id);
+                }}
+                onKeyDown={(e) =>{
+                    processinput(e, id)
+                }}
+                id={id}
             />
             <p>
                 Output: {display}
+            </p>
+            <p>
+                Id: {id}
+            </p>
+            <p>
+                Active? {activeid == id ? "yes" : "no"}
             </p>
         </div>
     )
