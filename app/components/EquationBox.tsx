@@ -155,7 +155,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                     const arg2 = valueStack.pop();
                     const op = operatorStack.pop();
     
-                    if (!arg1 || !arg2 || !op) {
+                    if (arg1 == null || arg2 == null || op == null) {
                         return {status: false, data: error.MALFORMED_EXPRESSION};
                     }
     
@@ -184,7 +184,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                     const arg2 = valueStack.pop();
                     const op = operatorStack.pop();
     
-                    if (!arg1 || !arg2 || !op) {
+                    if (arg1 == null || arg2 == null || op == null) {
                         return {status: false, data: error.MALFORMED_EXPRESSION};
                     }
     
@@ -224,7 +224,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
             const arg2 = valueStack.pop();
             const op = operatorStack.pop();
     
-            if (!arg1 || !arg2 || !op) {
+            if (arg1 == null || arg2 == null || op == null) {
                 return {status: false, data: error.MALFORMED_EXPRESSION};
             }
     
@@ -242,7 +242,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
         if (typeof(resultValue) == "string") {
             resultValue = variableMap.get(resultValue);
 
-            if (!resultValue) {
+            if (resultValue == null) {
                 return {status: false, data: error.UNDEFINED_VARIABLE};
             }
 
@@ -258,7 +258,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
         
         if (typeof(t1) == "string") {
             const t1val = variableMap.get(t1);
-            if (!t1val) {
+            if (t1val == null) {
                 // ERROR: Undefined variable
                 return null;
             }
@@ -267,7 +267,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     
         if (typeof(t2) == "string" && op != "=") {
             const t2val = variableMap.get(t2);
-            if (!t2val) {
+            if (t2val == null) {
                 // ERROR: Undefined variable
                 return null;
             }
