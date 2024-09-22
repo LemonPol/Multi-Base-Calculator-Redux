@@ -19,6 +19,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     useImperativeHandle(ref, () => ({
         focus() {
             if (inputRef.current) {
+                inputRef.current.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
                 inputRef.current.focus();
             }
         },
@@ -317,12 +318,12 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     }
     
     function toFixed(x: number): string {
-        if (Math.abs(x) < 0 || Math.abs(x) > 1e6) {
-          return x.toExponential(6);
-        } else {
-          return x.toFixed(6).replace(/\.?0+$/, '');
-        }
-      }
+    if (Math.abs(x) < 0 || Math.abs(x) > 1e6) {
+        return x.toExponential(6);
+    } else {
+        return x.toFixed(6).replace(/\.?0+$/, '');
+    }
+    }
       
 
 
@@ -349,7 +350,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 >
                     {display || "0"}
                     {evaluation?.status == false && (
-                        <span className="group flex items-center justify-center">
+                        <span className="w-full group flex items-center justify-center">
                             <span className="text-red-500 cursor-pointer">⚠️</span>
                             <span className="absolute right-full mr-2 w-max p-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
                                 {error[evaluation.data as error]}
