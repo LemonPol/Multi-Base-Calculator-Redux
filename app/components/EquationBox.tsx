@@ -1,18 +1,20 @@
 "use client"
 
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { result, error, EquationBoxProps } from "../types/common";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { result, error, EquationBoxProps, evaluation } from "../types/common";
 import { useVariableMap } from "./EquationContainer";
+import Selector from "./Selector";
 
 const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinput}: EquationBoxProps, ref) => {
 
     const { variableMap, setVariableMap } = useVariableMap();
-    const [display, setDisplay] = useState<string>("");
+    const [evaluation, setEvaluation] = useState<evaluation>();
+    const [display, setDisplay] = useState<string>();
+    const [base, setBase] = useState<Number>(0);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
     const value = useRef("");
-
 
     useImperativeHandle(ref, () => ({
         focus() {
@@ -22,10 +24,17 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
         },
         evaluate() {
             const result = evaluateEquation(value.current);
+            setEvaluation(result);
             if (result.status) {
-                setDisplay((result.data as result).dec as string);
+                const data = result.data as result;
+                switch(base) {
+                    case 0 : setDisplay((data.dec)); break;
+                    case 1 : setDisplay((data.hex)); break;
+                    case 2 : setDisplay((data.bin)); break;
+                }
+
             } else {
-                setDisplay(error[(result.data as error)]);
+                setDisplay(" ");
             }
         },
         input() {
@@ -35,7 +44,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
         }
     }));
 
-    function evaluateEquation(input: string) : {status: boolean, data: result} | {status: boolean, data: error} {
+    function evaluateEquation(input: string) : evaluation {
 
         // Check for empty input
         if (input.length == 0) {
@@ -238,7 +247,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
 
         }
     
-        return {status: true, data: {dec: resultValue.toString(10), hex: resultValue.toString(16), bin: resultValue.toString(2)}};
+        return {status: true, data: {dec: toFixed(resultValue as number), hex: resultValue.toString(16), bin: resultValue.toString(2)}};
     
     }
     
@@ -307,35 +316,54 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     
     }
     
+    function toFixed(x: number): string {
+        if (Math.abs(x) < 0 || Math.abs(x) > 1e6) {
+          return x.toExponential(6);
+        } else {
+          return x.toFixed(6).replace(/\.?0+$/, '');
+        }
+      }
+      
+
+
     return (
-        <div
-            style={{
-                backgroundColor: 'red'
-            }}
-        >
-            <input
-                ref={inputRef}
-                onChange={(e) => {
-                    value.current = e.target.value;
-                    evaluate();
-                }}
-                onSelect={(e) => {
-                    setactive(id);
-                }}
-                onKeyDown={(e) =>{
-                    processinput(e, id)
-                }}
-                id={id}
-            />
-            <p>
-                Output: {display}
-            </p>
-            <p>
-                Id: {id}
-            </p>
-            <p>
-                Active? {activeid == id ? "yes" : "no"}
-            </p>
+        <div className="h-15 p-2 w-full">
+            <div className="flex">
+                <input
+                    className="w-[300px] rounded-md pl-2 outline-none overflow-hidden bg-slate-100	"
+                    ref={inputRef}
+                    onChange={(e) => {
+                        value.current = e.target.value;
+                        evaluate();
+                    }}
+                    onSelect={(e) => {
+                        setactive(id);
+                    }}
+                    onKeyDown={(e) =>{
+                        processinput(e, id)
+                    }}
+                    id={id}
+                />
+                <p
+                    className="w-[148px] rounded-md px-2 mx-2 flex items-center align-center overflow-auto scrollbar-hide bg-slate-100"
+                >
+                    {display || "0"}
+                    {evaluation?.status == false && (
+                        <span className="group flex items-center justify-center">
+                            <span className="text-red-500 cursor-pointer">⚠️</span>
+                            <span className="absolute right-full mr-2 w-max p-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                                {error[evaluation.data as error]}
+                            </span>
+                        </span>
+                    )}
+                </p>
+                <Selector
+                    containerNum={1}
+                    setBase={setBase}
+                    evaluate={evaluate}
+                />
+            </div>
+            <hr className="border-t-2 border-slate-600 w-[600px] mt-2 -mb-2 -mx-2" />
         </div>
     )
 });

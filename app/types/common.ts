@@ -12,6 +12,11 @@ export interface result {
     bin: string
 }
 
+export interface evaluation {
+    status: boolean;
+    data: result | error;
+}
+
 export enum error {
     UNDEFINED_VARIABLE,
     MALFORMED_PARENTHESES,

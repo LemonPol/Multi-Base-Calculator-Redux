@@ -35,7 +35,13 @@ function EquationContainer() {
     };
 
     const removeEquationBox = (id: string) => {
-        setEquationBoxes((prev) => prev.filter((boxId) => boxId !== id));
+        setEquationBoxes((prevBoxes) => {
+            const removeIndex = prevBoxes.indexOf(id) + 1;
+            return [
+                ...prevBoxes.slice(0, removeIndex - 1),
+                ...prevBoxes.slice(removeIndex),
+            ];
+        });
         refs.current.delete(id);
     };
 
@@ -64,6 +70,7 @@ function EquationContainer() {
             }
         } else if (e.key == 'Backspace') {
             if (equationBoxes.length != 1 && activeRef?.current.input() == "") {
+                e.preventDefault();
                 removeEquationBox(id);
                 if (equationBoxes.length > 1) {
                     if (activeIndex < equationBoxes.length - 1) {
@@ -116,7 +123,7 @@ function EquationContainer() {
     };
 
     return (
-        <div>
+        <div className="w-[600px] h-[600px] rounded-md border-2 border-slate-600 overflow-auto scrollbar-hide">
             <VariableContext.Provider value={{ variableMap, setVariableMap }}>
                 {equationBoxes.map((id) => {
                     if (!refs.current.has(id)) {
