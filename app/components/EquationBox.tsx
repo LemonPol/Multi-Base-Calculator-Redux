@@ -328,8 +328,8 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
 
 
     return (
-        <div className="h-15 p-2 w-full">
-            <div className="flex">
+        <div className="h-15 p-2 w-full overflow-hidden">
+            <div className="flex overflow-hidden">
                 <input
                     className="w-[300px] rounded-md pl-2 outline-none overflow-hidden bg-slate-100	"
                     ref={inputRef}
