@@ -123,7 +123,7 @@ function EquationContainer() {
     };
 
     return (
-        <div className="w-[600px] h-[600px] rounded-md border-2 border-slate-600 overflow-auto scrollbar-hide">
+        <div className="w-[600px] h-[600px] rounded-md border-2 border-slate-600 overflow-auto scrollbar-hide bg-white">
             <VariableContext.Provider value={{ variableMap, setVariableMap }}>
                 {equationBoxes.map((id) => {
                     if (!refs.current.has(id)) {
