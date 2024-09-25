@@ -10,7 +10,7 @@
     <strong>Effortlessly convert and calculate with decimal, hexadecimal, and binary systems — all in one app.</strong>
     <br />RadixCalc was born out of the need for a fast, versatile calculator that supports mixed radix operations, making conversions between decimal, hexadecimal, and binary easier than ever.
     <br /><br />
-    <a href="RadixCalc.com"><strong>Launch RadixCalc</strong></a>
+    <a href="https://www.radixcalc.com/"><strong>Launch RadixCalc</strong></a>
   </p>
 </div>
 
