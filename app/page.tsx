@@ -6,7 +6,7 @@ import HelpModal from "./components/HelpModal";
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-gray-800 text-white p-4 flex justify-center items-center">
+    <header className="bg-blue-900 text-white p-4 flex justify-center items-center">
       <h1 className="text-4xl">RadixCalc</h1>
     </header>
   );
@@ -14,7 +14,7 @@ const Header: React.FC = () => {
 
 const Footer: React.FC<{ onHelpClick: () => void }> = ({ onHelpClick }) => {
   return (
-    <footer className="bg-gray-800 text-white p-4 text-center">
+    <footer className="bg-blue-800 text-white p-4 text-center">
       <p>
         Made with love by{" "}
         <a
