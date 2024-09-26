@@ -177,7 +177,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 input.charAt(index) == "*" ||
                 input.charAt(index) == "/" ||
                 input.charAt(index) == "^" ||
-                input.charAt(index) == "="
+                input.charAt(index) == "=" ||
+                input.charAt(index) == "&" ||
+                input.charAt(index) == "|" ||
+                input.charAt(index) == "~"
             ) {
                 while (operatorStack.length > 0 && getPrecedence(operatorStack[operatorStack.length-1])! >= getPrecedence(input.charAt(index))!) {
                     const arg1 = valueStack.pop();
@@ -211,7 +214,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 input.charAt(index) == "*" ||
                 input.charAt(index) == "/" ||
                 input.charAt(index) == "^" ||
-                input.charAt(index) == "="
+                input.charAt(index) == "=" ||
+                input.charAt(index) == "&" ||
+                input.charAt(index) == "|" ||
+                input.charAt(index) == "~" 
             )) {
                 // ERROR: Unexpected character!
                 return {status: false, data: error.INVALID_CHARACTER};
@@ -287,6 +293,9 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                     return t1;
                 }
             }
+            case "&" : return (t2 as number) & t1;
+            case "|" : return (t2 as number) | t1;
+            case "~" : return (t2 as number) ^ t1; 
         }
     }
     
@@ -297,6 +306,9 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
             case "-" : return 0;
             case "*" : return 1;
             case "/" : return 1;
+            case "&" : return 1;
+            case "|" : return 1;
+            case "~" : return 1;
             case "^" : return 2;
         }
     }

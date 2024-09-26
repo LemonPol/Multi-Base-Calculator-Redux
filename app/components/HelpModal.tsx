@@ -52,6 +52,7 @@ const HelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <ul className="list-disc list-inside text-gray-700 mb-4">
           <li><strong>=</strong>: Assigns a value to a variable (e.g. <code>x = 42</code>).</li>
           <li><strong>-</strong>, <strong>+</strong>, <strong>/</strong>, <strong>*</strong>, <strong>^</strong>: Standard arithmetic operations.</li>
+          <li><strong>&</strong>, <strong>|</strong>, <strong>~</strong>: Bitwise and, or, xor.</li>
         </ul>
 
         <h3 className="text-lg font-semibold mt-4">Navigation</h3>
