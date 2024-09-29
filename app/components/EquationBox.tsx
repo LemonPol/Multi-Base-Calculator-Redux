@@ -376,7 +376,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                     />
                 </div>
             </div>
-            <hr className="border-t-2 border-slate-600 w-full mt-2 -mb-2 -mx-2" />
+            <hr className="border-t-2 border-slate-600 w-[650px] mt-2 -mb-2 -mx-2" />
         </div>
     );    
 });
