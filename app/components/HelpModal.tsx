@@ -1,7 +1,7 @@
 const HelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl relative m-8 max-h-screen overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl relative m-8 max-h-[90%] overflow-y-auto">
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
           onClick={onClose}

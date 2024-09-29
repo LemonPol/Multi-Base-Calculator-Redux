@@ -336,14 +336,12 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
         return x.toFixed(6).replace(/\.?0+$/, '');
     }
     }
-      
-
 
     return (
         <div className="h-15 p-2 w-full overflow-hidden">
-            <div className="flex overflow-hidden">
+            <div className="flex flex-col sm:flex-row overflow-hidden">
                 <input
-                    className="w-[300px] rounded-md pl-2 outline-none overflow-hidden bg-slate-100	"
+                    className="min-h-10 w-full sm:w-[300px] rounded-md pl-2 outline-none overflow-hidden bg-slate-100 mb-2 sm:mb-0"
                     ref={inputRef}
                     onChange={(e) => {
                         value.current = e.target.value;
@@ -352,33 +350,35 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                     onSelect={(e) => {
                         setactive(id);
                     }}
-                    onKeyDown={(e) =>{
-                        processinput(e, id)
+                    onKeyDown={(e) => {
+                        processinput(e, id);
                     }}
                     id={id}
                 />
-                <p
-                    className="w-[148px] rounded-md px-2 mx-2 flex items-center align-center overflow-auto scrollbar-hide bg-slate-100"
-                >
-                    {display || "0"}
-                    {evaluation?.status == false && (
-                        <span className="w-full group flex items-center justify-center">
-                            <span className="text-red-500 cursor-pointer">⚠️</span>
-                            <span className="absolute right-full mr-2 w-max p-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                                {error[evaluation.data as error]}
+                <div className="flex w-full sm:w-auto">
+                    <p
+                        className="grow sm:w-[148px] rounded-md px-2 mr-2 sm:mx-2 flex items-center align-center overflow-auto scrollbar-hide bg-slate-100"
+                    >
+                        {display || "0"}
+                        {evaluation?.status == false && (
+                            <span className="w-full group flex items-center justify-center">
+                                <span className="text-red-500 cursor-pointer">⚠️</span>
+                                <span className="absolute right-full mr-2 w-max p-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50">
+                                    {error[evaluation.data as error]}
+                                </span>
                             </span>
-                        </span>
-                    )}
-                </p>
-                <Selector
-                    containerNum={1}
-                    setBase={setBase}
-                    evaluate={evaluate}
-                />
+                        )}
+                    </p>
+                    <Selector
+                        containerNum={1}
+                        setBase={setBase}
+                        evaluate={evaluate}
+                    />
+                </div>
             </div>
-            <hr className="border-t-2 border-slate-600 w-[600px] mt-2 -mb-2 -mx-2" />
+            <hr className="border-t-2 border-slate-600 w-full mt-2 -mb-2 -mx-2" />
         </div>
-    )
+    );    
 });
 
 export default EquationBox;
