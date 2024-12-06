@@ -50,9 +50,9 @@ const HelpModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           RadixCalc currently supports the following operations:
         </p>
         <ul className="list-disc list-inside text-gray-700 mb-4">
-          <li><strong>=</strong>: Assigns a value to a variable (e.g. <code>x = 42</code>).</li>
-          <li><strong>-</strong>, <strong>+</strong>, <strong>/</strong>, <strong>*</strong>, <strong>^</strong>: Standard arithmetic operations.</li>
-          <li><strong>&</strong>, <strong>|</strong>, <strong>~</strong>: Bitwise and, or, xor.</li>
+          <li><strong>=</strong> : Assigns a value to a variable (e.g. <code>x = 42</code>).</li>
+          <li><strong>-</strong>, <strong>+</strong>, <strong>/</strong>, <strong>*</strong>, <strong>^</strong>, <strong>%</strong> : Subtract, add, divide, multiple, exponentiate, modulo.</li>
+          <li><strong>&</strong>, <strong>|</strong>, <strong>~</strong>, <strong>&lt;</strong>, <strong>&gt;</strong> : Bitwise and, or, xor, shift left, shift right.</li>
         </ul>
 
         <h3 className="text-lg font-semibold mt-4">Navigation</h3>

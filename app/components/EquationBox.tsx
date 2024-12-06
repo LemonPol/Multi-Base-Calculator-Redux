@@ -84,16 +84,33 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 }
     
                 let currentVal = 0; // Used for numeric processing
+                let pointIndex = -1;
+                let fractionalFactor = 1;
     
                 // Process the remaining token
                 while (index < input.length &&
                     (
                       (input.charCodeAt(index) >= 48 && input.charCodeAt(index) <= 57) ||  // 0-9
                       (input.charCodeAt(index) >= 97 && input.charCodeAt(index) <= 102) || // a-f
-                      (input.charCodeAt(index) >= 65 && input.charCodeAt(index) <= 70)     // A-F
+                      (input.charCodeAt(index) >= 65 && input.charCodeAt(index) <= 70) ||  // A-F
+                      (input.charCodeAt(index) == 46) // .
                     )
                 ) {
-                    currentVal = radix*currentVal + parseInt(input.charAt(index), radix);
+
+                    if (input.charCodeAt(index) == 46) {
+                        if (pointIndex == -1) {
+                            pointIndex = index;
+                        }
+                        index++;
+                    }
+
+                    if (pointIndex == -1) {
+                        currentVal = radix*currentVal + parseInt(input.charAt(index), radix);
+                    } else {
+                        console.log("HERE");
+                        fractionalFactor /= radix;
+                        currentVal += fractionalFactor * parseInt(input.charAt(index), radix);
+                    }
                     index++;
                 }
     
@@ -104,6 +121,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     
                 // Add value to stack
                 valueStack.push(currentVal);
+                console.log(valueStack);
     
             }
     
@@ -180,7 +198,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 input.charAt(index) == "=" ||
                 input.charAt(index) == "&" ||
                 input.charAt(index) == "|" ||
-                input.charAt(index) == "~"
+                input.charAt(index) == "~" ||
+                input.charAt(index) == ">" ||
+                input.charAt(index) == "<" ||
+                input.charAt(index) == "%"
             ) {
                 while (operatorStack.length > 0 && getPrecedence(operatorStack[operatorStack.length-1])! >= getPrecedence(input.charAt(index))!) {
                     const arg1 = valueStack.pop();
@@ -217,7 +238,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
                 input.charAt(index) == "=" ||
                 input.charAt(index) == "&" ||
                 input.charAt(index) == "|" ||
-                input.charAt(index) == "~" 
+                input.charAt(index) == "~" ||
+                input.charAt(index) == ">" ||
+                input.charAt(index) == "<" ||
+                input.charAt(index) == "%"
             )) {
                 // ERROR: Unexpected character!
                 return {status: false, data: error.INVALID_CHARACTER};
@@ -284,7 +308,7 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
             case "+" : return t2 as number + t1;
             case "-" : return t2 as number - t1;
             case "*" : return t2 as number * t1;
-            case "/" : return t1 == 0 ? 0 : Math.floor(t2 as number / t1); 
+            case "/" : return t1 == 0 ? 0 : t2 as number / t1; 
             case "^" : return Math.pow(t2 as number, t1);
             case "=" : {
                 if (typeof t2 == "string") {
@@ -295,7 +319,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
             }
             case "&" : return (t2 as number) & t1;
             case "|" : return (t2 as number) | t1;
-            case "~" : return (t2 as number) ^ t1; 
+            case "~" : return (t2 as number) ^ t1;
+            case "<" : return (t2 as number) * Math.pow(2, t1);
+            case ">" : return (t2 as number) / Math.pow(2, t1);
+            case "%" : return (t2 as number) % t1;
         }
     }
     
@@ -309,7 +336,10 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
             case "&" : return 1;
             case "|" : return 1;
             case "~" : return 1;
+            case "%" : return 1;
             case "^" : return 2;
+            case "<" : return 3;
+            case ">" : return 3;
         }
     }
     
@@ -330,11 +360,11 @@ const EquationBox = forwardRef(({ evaluate, id, setactive, activeid, processinpu
     }
     
     function toFixed(x: number): string {
-    if (Math.abs(x) < 0 || Math.abs(x) > 1e6) {
-        return x.toExponential(6);
-    } else {
-        return x.toFixed(6).replace(/\.?0+$/, '');
-    }
+        if (Math.abs(x) < 0 || Math.abs(x) > 1e6) {
+            return x.toExponential(6);
+        } else {
+            return x.toString();
+        }
     }
 
     return (
